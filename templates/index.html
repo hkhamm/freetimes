@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html lang="en"> <head>
+<title>Appointments</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" type="text/css"
+     href="//cdn.jsdelivr.net/bootstrap/latest/css/bootstrap.css"
+/>
+
+<link rel="stylesheet" type="text/css"
+ href="/static/css/daterangepicker.css"
+/>
+
+<link rel="stylesheet" type="text/css"
+    href="/static/css/busy.css"
+/>
+
+<!-- jquery from a content distribution network; probably cached -->
+<script type="text/javascript"
+     src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">
+</script>
+
+<!-- Moment from a content distribution network (CDN) -->
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js">
+</script>
+
+<!-- Bootstrap Date Range Picker from a content distribution network (CDN) -->
+<script type="text/javascript"
+        src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js">
+</script>
+
+</head>
+
+<body>
+<div class="container">
+
+<h1>Busy and Free Times</h1>
+<!--
+If there are any warnings or other messages from a prior action,
+they appear above the rest of the content, just until the next
+action.
+  -->
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+{# Shows the busy times for the selected calendar(s). #}
+{% if session.busy_times is defined %}
+  <form action="{{ url_for('clear_session') }}" method="post">
+    <label for="busy-times">Busy Times</label>
+    <ul class="list-group" id="busy-times">
+    {% for event in session.busy_times %}
+      <li class="list-group-item">
+      {% if event.start.dateTime %}
+        {{ event.summary }}: {{ event.start.dateTime | fmtdatetime }} -
+        {{ event.end.dateTime | fmtdatetime }}
+      {% else %}
+        {{ event.summary }}: {{ event.start.date | fmtdate }} -
+        {{ event.end.date | fmtdate }}
+      {% endif %}
+      </li>
+    {% endfor %}
+    </ul>
+    <button type="submit" class="btn btn-default">Clear Session</button>
+  </form>
+  <hr>
+{% endif %}
+
+{# Shows the free times for the selected calendar(s).#}
+{% if session.free_times is defined %}
+  <form action="{{ url_for('clear_session') }}" method="post">
+    <label for="free-times">Free Times</label>
+    <ul class="list-group" id="free-times">
+    {% for interval in session.free_times %}
+      <li class="list-group-item">
+        {{ interval[0] | fmtdatetime }} - {{ interval[1] | fmtdatetime }}
+      </li>
+    {% endfor %}
+    </ul>
+    <button type="submit" class="btn btn-default">Clear Session</button>
+  </form>
+  <hr>
+{% endif %}
+
+{# Shows the date range picker #}
+<form action="{{ url_for('set_range') }}" method="post">
+  <div class="form-group">
+    <label for="daterange">Date Range</label>
+    <input class="form-control pull-down" type="text" id="daterange"
+          {% if session.daterange is defined %}
+            value="{{ session.daterange }}"
+          {% endif %}
+          name="daterange"
+          style="background: #fff; cursor: pointer; padding: 5px 10px;
+         border: 1px solid #ccc;" >
+</div>
+<script type="text/javascript">
+  $(function() {
+    $('input[name="daterange"]').daterangepicker({
+      ranges: {
+        'Today': [moment(), moment()],
+        'Tomorrow': [moment().add(1, 'days'), moment().add(1, 'days')],
+        'This week': [moment(), moment().endOf('week')],
+        'Next week': [moment().add(7, 'days').startOf('week'),
+                      moment().add (7, 'days').endOf('week')],
+        'This month': [moment(), moment().endOf('month')],
+        'Within two weeks': [moment(), moment().add(15, 'days')]
+      }
+    });
+  });
+</script>
+<button type="submit" class="btn btn-default">Choose</button>
+</form>
+
+{# Shows the set of calendars from the user. #}
+{% if session.calendars is defined %}
+  <hr>
+  <form action="{{ url_for('set_checked_calendars') }}" method="post">
+    <label for="calendars">Calendars</label>
+    <div class="container-fluid" id="calendars">
+      {% set i = 0 %}
+      <div class="row">
+        <div class="form-group pull-left col-md-3">
+        {% for cal in session.calendars if cal.selected %}
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="calendar" value="{{ cal.id }}">
+              {{ cal.summary }}
+            </label>
+          </div>
+          {% if loop.index is divisibleby 3 %}
+            {% set i = i + 1 %}
+            </div>
+            <div class="form-group pull-left col-md-4">
+            {% if i == 3 %}
+              {% set i = 0 %}
+              </div>
+              <div class="row">
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+        </div>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-default">Get times</button>
+  </form>
+{% endif %}
+
+</div>  <!-- container (for bootstrap) -->
+</body>
+</html>
