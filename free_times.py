@@ -49,7 +49,7 @@ def get_free_times(busy_times):
             else:
                 is_first = False
             stored_event = event
-        elif start_time > 900 and end_time < 1700:
+        elif start_time > 900 and end_time <= 1700:
             if not is_first:
                 if stored_event_day < event_day:
                     prev_day_end = arrow.get(
@@ -68,29 +68,6 @@ def get_free_times(busy_times):
                     free_times.append((stored_event_end,
                                        event_start.isoformat()))
                     print('4 {} - {}'.format(stored_event_end,
-                                             event_start.isoformat()))
-            else:
-                is_first = False
-            stored_event = event
-        elif start_time > 900 and end_time == 1700:
-            if not is_first:
-                if stored_event_day < event_day:
-                    prev_day_end = arrow.get(
-                        stored_event['end']['dateTime']).replace(hour=END_TIME,
-                                                                 minute=0)
-                    free_times.append((stored_event_end,
-                                       prev_day_end.isoformat()))
-                    print('5 {} - {}'.format(stored_event_end,
-                                             prev_day_end.isoformat()))
-                if event_day != stored_event_day:
-                    free_times.append((day_start.isoformat(),
-                                       event_start.isoformat()))
-                    print('6 {} - {}'.format(day_start.isoformat(),
-                                             event_start.isoformat()))
-                elif event_day == stored_event_day:
-                    free_times.append((stored_event_end,
-                                       event_start.isoformat()))
-                    print('7 {} - {}'.format(stored_event_end,
                                              event_start.isoformat()))
             else:
                 is_first = False

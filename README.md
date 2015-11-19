@@ -1,6 +1,5 @@
 # proj7-freetimes
-Calculates busy and free times using fetched appointment data from a 
-selection of a user's Google calendars.
+Calculates busy and free times using fetched appointment data from a selection of a user's Google calendars.
 
 ### Installation and Execution
 

@@ -102,15 +102,24 @@ def get_busy_times(service):
 
         # if event is all day
         if 'date' in event['start']:
-            tmp = event['start']['date']
             this_day = arrow.get(event['start']['dateTime']).format('dddd')
+            this_day_end = arrow.get(event['end']['dateTime'])
+
             for j in sorted(busy_dict):
                 other_event = busy_dict[j]
+
                 if event != other_event:
                     other_day = arrow.get(
                         other_event['start']['dateTime']).format('dddd')
+
                     if this_day == other_day:
                         remove_list.append(other_event)
+
+                    other_day_end = arrow.get(other_event['end']['dateTime'])
+
+                    if this_day_end == other_day_end:
+                        remove_list.append(other_event)
+
         if event not in remove_list:
             busy.append(busy_dict[i])
 
