@@ -325,7 +325,8 @@ def list_times(service):
     """
     Lists the times from the selected calendar in ascending order.
     :param service: a google 'service' object
-    :return: a sorted list of times for the selected calendar(s)
+    :return: busy is a sorted list of busy times and free is a sorted list of
+    free times for the selected calendar(s)
     """
     app.logger.debug('Entering list_times')
 

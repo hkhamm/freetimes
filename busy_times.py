@@ -20,7 +20,10 @@ def get_busy_times(service):
     busy_dict = {}
     busy = []
 
-    # TODO refactor because its too complicated
+    # TODO refactor because its too complicated,
+    # TODO try integrating removal logic into main algorithm
+
+    print('busy times')
 
     for cal_id in flask.session['checked_calendars']:
         events = service.events().list(calendarId=cal_id).execute()
@@ -39,6 +42,8 @@ def get_busy_times(service):
                 if event_end > day_end:
                     event['end']['dateTime'] = day_end.isoformat()
 
+                print('1 {} - {}'.format(event['start']['dateTime'],
+                                         event['end']['dateTime']))
                 busy_dict[event_start.isoformat()] = event
 
             # Catches all day events between beginning and ending times
@@ -52,16 +57,19 @@ def get_busy_times(service):
                 tmp = tmp.replace(days=-1, hour=END_TIME, minute=0).isoformat()
                 event['end']['dateTime'] = tmp
 
+                print('2 {} - {}'.format(event['start']['dateTime'],
+                                         event['end']['dateTime']))
+
                 busy_dict[event_start.isoformat()] = event
 
             # Catches events that start before beginning datetime and end
             # before or after the ending datetime
             if (event_start < begin_date < event_end and
                     not available):
-                try:
+                if 'dateTime' in event['start']:
                     start_tmp = arrow.get(event['start']['dateTime'])
                     end_tmp = arrow.get(event['end']['dateTime'])
-                except:
+                else:
                     start_tmp = arrow.get(event['start']['date'])
                     end_tmp = arrow.get(event['end']['date'])
 
@@ -71,16 +79,19 @@ def get_busy_times(service):
                 event['start']['dateTime'] = start_tmp
                 event['end']['dateTime'] = end_tmp
 
+                print('3 {} - {}'.format(event['start']['dateTime'],
+                                         event['end']['dateTime']))
+
                 busy_dict[event_start.isoformat()] = event
 
             # Catches all day events events that start before beginning datetime
             # and end before or after the ending datetime
             if (event_start < begin_date < event_end and
                     not available and is_all_day):
-                try:
+                if 'dateTime' in event['start']:
                     start_tmp = arrow.get(event['start']['dateTime'])
                     end_tmp = arrow.get(event['end']['dateTime'])
-                except:
+                else:
                     start_tmp = arrow.get(event['start']['date'])
                     end_tmp = arrow.get(event['end']['date'])
 
@@ -92,6 +103,9 @@ def get_busy_times(service):
                                           tzinfo=tz.tzlocal()).isoformat()
                 event['start']['dateTime'] = start_tmp
                 event['end']['dateTime'] = end_tmp
+
+                print('4 {} - {}'.format(event['start']['dateTime'],
+                                         event['end']['dateTime']))
 
                 busy_dict[event_start.isoformat()] = event
 
@@ -123,6 +137,8 @@ def get_busy_times(service):
         if event not in remove_list:
             busy.append(busy_dict[i])
 
+    print()
+
     return busy
 
 
@@ -132,10 +148,9 @@ def is_available(event):
     :param event: is the event to check.
     :return: True if it is transparent and False if not
     """
-    try:
-        transparency = event['transparency']
+    if 'transparency' in event:
         available = True
-    except:
+    else:
         available = False
 
     return available
@@ -149,10 +164,10 @@ def get_start_end_datetime(event):
     """
     is_all_day = False
 
-    try:
+    if 'dateTime' in event['start']:
         event_start = arrow.get(event['start']['dateTime'])
         event_end = arrow.get(event['end']['dateTime'])
-    except:
+    else:
         event_start = arrow.get(event['start']['date'])
         event_end = arrow.get(event['end']['date'])
         is_all_day = True

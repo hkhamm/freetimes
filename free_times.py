@@ -17,6 +17,7 @@ def get_free_times(busy_times):
     stored_event = arrow.now()
 
     # TODO refactor using a table
+    print('free times')
 
     for event in busy_times:
         if is_first:
