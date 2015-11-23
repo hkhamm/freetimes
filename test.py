@@ -594,6 +594,29 @@ def get_free_times_10_test():
     assert free == get_free_times(busy, begin_date, end_date)
 
 
+def get_free_times_11_test():
+    """
+    get_free_times_11_test: Two busy times, last one ends at end of a day
+    that is not the end day.
+    """
+    begin_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=9, minute=0, second=0, microsecond=0, day=16,
+        month=11, year=2015)
+    end_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=17, minute=0, second=0, microsecond=0, day=20,
+        month=11, year=2015)
+
+    busy = [{'start': {'dateTime': '2015-11-16T09:00:00-08:00'},
+             'end': {'dateTime': '2015-11-16T17:00:00-08:00'}},
+            {'start': {'dateTime': '2015-11-18T09:00:00-08:00'},
+             'end': {'dateTime': '2015-11-18T17:00:00-08:00'}}]
+
+    free = [('2015-11-17T09:00:00-08:00', '2015-11-17T17:00:00-08:00'),
+            ('2015-11-19T09:00:00-08:00', '2015-11-20T17:00:00-08:00')]
+
+    assert free == get_free_times(busy, begin_date, end_date)
+
+
 def is_available_true_test():
     event = {'transparency': 'transparent'}
 
