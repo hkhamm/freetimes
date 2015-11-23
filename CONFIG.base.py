@@ -15,3 +15,5 @@ DEBUG = False  # Because it's unsafe to run outside localhost
 
 # both
 GOOGLE_LICENSE_KEY = '.client_secret.json'
+START_TIME = 9
+END_TIME = 17
