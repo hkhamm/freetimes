@@ -5,7 +5,7 @@ Calculates busy and free times using fetched appointment data from a selection o
 
 1) Download the repository.
 
-2) Obtain a *Client Id* and *Client Secret* for Google [here](https://auth0.com/docs/connections/social/google) and download as a JSON file to `/path/to/proj6-gcal`.
+2) Obtain a *Client Id* and *Client Secret* for Google [here](https://auth0.com/docs/connections/social/google) and download as a JSON file to `/path/to/proj7-gcal`.
 
 3) Copy CONFIG.base.py to CONFIG.py and edit for your environment. Include the client secret JSON file.
 
