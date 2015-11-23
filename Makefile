@@ -9,8 +9,8 @@
 
 # Configuration
 #
-# PYVENV = /usr/bin/env pyvenv-3.4 --without-pip env # ix.cs.uoregon.edu
-PYVENV = /usr/bin/env pyvenv env # Mac OS X
+PYVENV = /usr/bin/env pyvenv-3.4 --without-pip env # ix.cs.uoregon.edu
+# PYVENV = /usr/bin/env pyvenv env # Mac OS X
 
 ##
 ## Install in a new environment:
