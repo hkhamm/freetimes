@@ -85,7 +85,8 @@ def get_free_times(busy_times, begin_date, end_date):
 
                 if stored_event_end_time == '17:00':
                     stored_event_end = arrow.get(
-                        stored_event_end).replace(days=+1, hour=9).isoformat()
+                        stored_event_end).replace(days=+1,
+                                                  hour=START_TIME).isoformat()
 
                 free_times.append((stored_event_end, event_start))
                 # print('1 {} - {}'.format(stored_event_end,
