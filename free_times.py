@@ -17,7 +17,7 @@ def get_free_times(busy_times, begin_date, end_date):
     free_times = []
     busy_times_original = busy_times
 
-    print('free times')
+    # print('free times')
 
     if len(busy_times) == 0:
         free_times.append((begin_date.isoformat(), end_date.isoformat()))
@@ -119,6 +119,6 @@ def get_free_times(busy_times, begin_date, end_date):
 
             stored_event = event
 
-    print()
+    # print()
 
     return free_times
