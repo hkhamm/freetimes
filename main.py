@@ -1,14 +1,14 @@
 import flask
 from flask import render_template
 from flask import request
-from flask import url_for
-import json
+# from flask import url_for
+# import json
 import logging
 import uuid
 
 # Date handling
 import arrow  # Replacement for datetime, based on moment.js
-import datetime  # But we still need time
+# import datetime  # But we still need time
 from dateutil import tz  # For interpreting local times
 
 # OAuth2  - Google library implementation for convenience
@@ -329,6 +329,9 @@ def list_times(service):
     free times for the selected calendar(s)
     """
     app.logger.debug('Entering list_times')
+
+    print('begin {}'.format(flask.session['begin_date']))
+    print('end {}'.format(flask.session['end_date']))
 
     events = get_events(service)
     busy = get_busy_times(events)

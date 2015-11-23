@@ -35,31 +35,75 @@ def get_busy_dict(events, begin_date, end_date):
     """
     busy_dict = {}
 
+    print('busy times')
+
+    # print('begin_date {}'.format(begin_date))
+    # print('end_date {}'.format(end_date))
+
     for event in events:
         available = is_available(event)
         event_start, event_end, is_all_day = get_start_end_datetime(event)
         day_start = event_start.replace(hour=START_TIME, minute=0)
         day_end = event_end.replace(hour=END_TIME, minute=0)
+        # print('event_start {}'.format(event_start))
+        # print('event_end {}'.format(event_end))
+        # print()
 
-        if is_all_day and not available:
+        # all day events that either begin or end in the time interval
+        if ((begin_date <= event_start <= end_date or
+                begin_date <= event_end <= end_date) and
+                not available and is_all_day):
+
             if day_start < begin_date:
                 event['start']['dateTime'] = begin_date.isoformat()
             else:
                 event['start']['dateTime'] = day_start.isoformat()
 
-            event['end']['dateTime'] = day_end.replace(days=-1).isoformat()
+            if event_end > end_date:
+                event['end']['dateTime'] = end_date.isoformat()
+            else:
+                event['end']['dateTime'] = day_end.replace(days=-1).isoformat()
+
+            print('0 {} - {}'.format(event['start']['dateTime'],
+                                     event['end']['dateTime']))
 
             busy_dict[event['start']['dateTime']] = event
-        elif ((event_start >= begin_date or event_end <= end_date) and
-                not available and not is_all_day and
-                event_start < day_end and event_end > day_start):
+
+        # events completely within individual days and the time interval
+        elif (begin_date <= event_start <= end_date and
+                begin_date <= event_end <= end_date and
+                not available and not is_all_day):
+
             if event_start < day_start:
                 event['start']['dateTime'] = day_start.isoformat()
+
             if event_end > day_end:
                 event['end']['dateTime'] = day_end.isoformat()
 
+            print('1 {} - {}'.format(event['start']['dateTime'],
+                                     event['end']['dateTime']))
+
             busy_dict[event['start']['dateTime']] = event
 
+        # elif ((begin_date <= event_start <= end_date) or
+        #         (begin_date <= event_end <= end_date) and
+        #         not available and not is_all_day and
+        #         event_start < day_end and event_end > day_start):
+        #
+        #     # print('{} >= {} or {} <= {}'.format(event_start, begin_date,
+        #     #                                     event_end, end_date))
+        #
+        #     if event_start < day_start:
+        #         event['start']['dateTime'] = day_start.isoformat()
+        #     if event_end > day_end:
+        #         event['end']['dateTime'] = day_end.isoformat()
+        #
+        #     print('2 {} - {}'.format(event['start']['dateTime'],
+        #                              event['end']['dateTime']))
+        #
+        #     busy_dict[event['start']['dateTime']] = event
+
+    print()
     return busy_dict
 
 

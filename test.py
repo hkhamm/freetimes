@@ -1,5 +1,4 @@
 import arrow
-import flask
 from dateutil import tz
 
 from free_times import get_free_times
@@ -8,70 +7,24 @@ from busy_times import get_start_end_datetime, is_available, get_busy_dict, \
 from main import interpret_time, interpret_date, cal_sort_key
 
 
-def get_busy_dict_test():
+def get_busy_dict_1_test():
+    """
+    get_busy_dict_1_test: All day events that start before and end during the
+    interval.
+    """
     begin_date = arrow.get().replace(
-        tzinfo=tz.tzlocal(), hour=9, minute=0, second=0, microsecond=0, day=9,
+        tzinfo=tz.tzlocal(), hour=9, minute=0, second=0, microsecond=0, day=16,
         month=11, year=2015)
     end_date = arrow.get().replace(
-        tzinfo=tz.tzlocal(), hour=17, minute=0, second=0, microsecond=0, day=9,
+        tzinfo=tz.tzlocal(), hour=17, minute=0, second=0, microsecond=0, day=20,
         month=11, year=2015)
 
-    print(begin_date.isoformat())
-    print(end_date.isoformat())
+    events = [{'start': {'date': '2015-11-12'},
+               'end': {'date': '2015-11-16'}}]
 
-    events = [{'start': {'dateTime': '2015-11-11T07:00:00-08:00'},
-              'end': {'dateTime': '2015-11-11T08:00:00-08:00'}},
-              {'start': {'dateTime': '2015-11-10T08:00:00-08:00'},
-              'end': {'dateTime': '2015-11-10T18:00:00-08:00'}},
-              {'start': {'dateTime': '2015-11-11T08:00:00-08:00'},
-              'end': {'dateTime': '2015-11-11T10:00:00-08:00'}},
-              {'start': {'dateTime': '2015-11-12T11:00:00-08:00'},
-              'end': {'dateTime': '2015-11-12T12:00:00-08:00'}},
-              {'start': {'dateTime': '2015-11-12T12:00:00-08:00'},
-              'end': {'dateTime': '2015-11-12T13:00:00-08:00'}},
-              {'start': {'dateTime': '2015-11-09T10:00:00-08:00'},
-              'end': {'dateTime': '2015-11-09T11:00:00-08:00'}},
-              {'start': {'dateTime': '2015-11-13T16:00:00-08:00'},
-              'end': {'dateTime': '2015-11-13T18:00:00-08:00'}},
-              {'start': {'dateTime': '2015-11-12T15:00:00-08:00'},
-              'end': {'dateTime': '2015-11-12T16:00:00-08:00'}},
-              {'start': {'dateTime': '2015-11-11T10:00:00-08:00'},
-              'end': {'dateTime': '2015-11-11T11:00:00-08:00'}},
-              {'start': {'dateTime': '2015-11-12T09:00:00-08:00'},
-              'end': {'dateTime': '2015-11-12T11:00:00-08:00'}},
-              {'start': {'date': '2015-11-08'},
-              'end': {'date': '2015-11-10'}}]
-
-    busy = {'2015-11-12T09:00:00-08:00':
-            {'start': {'dateTime': '2015-11-12T09:00:00-08:00'},
-             'end': {'dateTime': '2015-11-12T11:00:00-08:00'}},
-            '2015-11-13T16:00:00-08:00':
-            {'start': {'dateTime': '2015-11-13T16:00:00-08:00'},
-             'end': {'dateTime': '2015-11-13T17:00:00-08:00'}},
-            '2015-11-09T09:00:00-08:00':
-            {'start': {'dateTime': '2015-11-09T09:00:00-08:00'},
-             'end': {'dateTime': '2015-11-09T17:00:00-08:00'}},
-            '2015-11-12T12:00:00-08:00':
-            {'start': {'dateTime': '2015-11-12T12:00:00-08:00'},
-             'end': {'dateTime': '2015-11-12T13:00:00-08:00'}},
-            '2015-11-12T15:00:00-08:00':
-            {'start': {'dateTime': '2015-11-12T15:00:00-08:00'},
-             'end': {'dateTime': '2015-11-12T16:00:00-08:00'}},
-            '2015-11-12T11:00:00-08:00':
-            {'start': {'dateTime': '2015-11-12T11:00:00-08:00'},
-             'end': {'dateTime': '2015-11-12T12:00:00-08:00'}},
-            '2015-11-10T09:00:00-08:00':
-            {'start': {'dateTime': '2015-11-10T09:00:00-08:00'},
-             'end': {'dateTime': '2015-11-10T17:00:00-08:00'}},
-            '2015-11-09T10:00:00-08:00':
-            {'start': {'dateTime': '2015-11-09T10:00:00-08:00'},
-             'end': {'dateTime': '2015-11-09T11:00:00-08:00'}},
-            '2015-11-11T10:00:00-08:00':
-            {'start': {'dateTime': '2015-11-11T10:00:00-08:00'},
-             'end': {'dateTime': '2015-11-11T11:00:00-08:00'}},
-            '2015-11-11T09:00:00-08:00':
-            {'start': {'dateTime': '2015-11-11T09:00:00-08:00'},
-             'end': {'dateTime': '2015-11-11T10:00:00-08:00'}}}
+    busy = {'2015-11-16T09:00:00-08:00':
+            {'start': {'dateTime': '2015-11-16T09:00:00-08:00'},
+             'end': {'dateTime': '2015-11-16T17:00:00-08:00'}}}
 
     busy_test = get_busy_dict(events, begin_date, end_date)
 
@@ -79,70 +32,564 @@ def get_busy_dict_test():
         assert event in busy
 
 
-def get_busy_list_test():
-    busy = {'2015-11-12T09:00:00-08:00':
-            {'start': {'dateTime': '2015-11-12T09:00:00-08:00'},
-             'end': {'dateTime': '2015-11-12T11:00:00-08:00'}},
-            '2015-11-13T16:00:00-08:00':
-            {'start': {'dateTime': '2015-11-13T16:00:00-08:00'},
-             'end': {'dateTime': '2015-11-13T17:00:00-08:00'}},
-            '2015-11-09T09:00:00-08:00':
-            {'start': {'dateTime': '2015-11-09T09:00:00-08:00'},
-             'end': {'dateTime': '2015-11-09T17:00:00-08:00'}},
-            '2015-11-12T12:00:00-08:00':
-            {'start': {'dateTime': '2015-11-12T12:00:00-08:00'},
-             'end': {'dateTime': '2015-11-12T13:00:00-08:00'}},
-            '2015-11-12T15:00:00-08:00':
-            {'start': {'dateTime': '2015-11-12T15:00:00-08:00'},
-             'end': {'dateTime': '2015-11-12T16:00:00-08:00'}},
-            '2015-11-12T11:00:00-08:00':
-            {'start': {'dateTime': '2015-11-12T11:00:00-08:00'},
-             'end': {'dateTime': '2015-11-12T12:00:00-08:00'}},
-            '2015-11-10T09:00:00-08:00':
-            {'start': {'dateTime': '2015-11-10T09:00:00-08:00'},
-             'end': {'dateTime': '2015-11-10T17:00:00-08:00'}},
-            '2015-11-09T10:00:00-08:00':
-            {'start': {'dateTime': '2015-11-09T10:00:00-08:00'},
-             'end': {'dateTime': '2015-11-09T11:00:00-08:00'}},
-            '2015-11-11T10:00:00-08:00':
-            {'start': {'dateTime': '2015-11-11T10:00:00-08:00'},
-             'end': {'dateTime': '2015-11-11T11:00:00-08:00'}},
-            '2015-11-11T09:00:00-08:00':
-            {'start': {'dateTime': '2015-11-11T09:00:00-08:00'},
-             'end': {'dateTime': '2015-11-11T10:00:00-08:00'}}}
+def get_busy_dict_2_test():
+    """
+    get_busy_dict_2_test: All day events that start during and end after the
+    interval.
+    """
+    begin_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=9, minute=0, second=0, microsecond=0, day=16,
+        month=11, year=2015)
+    end_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=17, minute=0, second=0, microsecond=0, day=20,
+        month=11, year=2015)
 
-    busy_list = [{'start': {'dateTime': '2015-11-09T09:00:00-08:00'},
-                 'end': {'dateTime': '2015-11-11T11:00:00-08:00'}},
-                 {'start': {'dateTime': '2015-11-12T09:00:00-08:00'},
-                 'end': {'dateTime': '2015-11-12T13:00:00-08:00'}},
-                 {'start': {'dateTime': '2015-11-12T15:00:00-08:00'},
-                 'end': {'dateTime': '2015-11-12T16:00:00-08:00'}},
-                 {'start': {'dateTime': '2015-11-13T16:00:00-08:00'},
-                 'end': {'dateTime': '2015-11-13T17:00:00-08:00'}}]
+    events = [{'start': {'date': '2015-11-20'},
+               'end': {'date': '2015-11-22'}}]
+
+    busy = {'2015-11-20T09:00:00-08:00':
+            {'start': {'dateTime': '2015-11-20T09:00:00-08:00'},
+             'end': {'dateTime': '2015-11-20T17:00:00-08:00'}}}
+
+    busy_test = get_busy_dict(events, begin_date, end_date)
+
+    for event in busy_test:
+        assert event in busy
+
+
+def get_busy_dict_3_test():
+    """
+    get_busy_dict_3_test: All day, 2 day events that start during and end
+    during the interval.
+    """
+    begin_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=9, minute=0, second=0, microsecond=0, day=16,
+        month=11, year=2015)
+    end_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=17, minute=0, second=0, microsecond=0, day=20,
+        month=11, year=2015)
+
+    events = [{'start': {'date': '2015-11-18'},
+               'end': {'date': '2015-11-20'}}]
+
+    busy = {'2015-11-18T09:00:00-08:00':
+            {'start': {'dateTime': '2015-11-18T09:00:00-08:00'},
+             'end': {'dateTime': '2015-11-19T17:00:00-08:00'}}}
+
+    busy_test = get_busy_dict(events, begin_date, end_date)
+
+    for event in busy_test:
+        assert event in busy
+
+
+def get_busy_dict_4_test():
+    """
+    get_busy_dict_4_test: All day, 1 day events that start during and end
+    during the interval.
+    """
+    begin_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=9, minute=0, second=0, microsecond=0, day=16,
+        month=11, year=2015)
+    end_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=17, minute=0, second=0, microsecond=0, day=20,
+        month=11, year=2015)
+
+    events = [{'start': {'date': '2015-11-19'},
+               'end': {'date': '2015-11-20'}}]
+
+    busy = {'2015-11-19T09:00:00-08:00':
+            {'start': {'dateTime': '2015-11-19T09:00:00-08:00'},
+             'end': {'dateTime': '2015-11-20T17:00:00-08:00'}}}
+
+    busy_test = get_busy_dict(events, begin_date, end_date)
+
+    for event in busy_test:
+        assert event in busy
+
+
+def get_busy_dict_5_test():
+    """
+    get_busy_dict_5_test: All day events that start before and end after the
+    interval.
+    """
+
+    begin_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=9, minute=0, second=0, microsecond=0, day=16,
+        month=11, year=2015)
+    end_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=17, minute=0, second=0, microsecond=0, day=20,
+        month=11, year=2015)
+
+    events = [{'start': {'date': '2015-11-15'},
+               'end': {'date': '2015-11-21'}}]
+
+    busy = {'2015-11-16T09:00:00-08:00':
+            {'start': {'dateTime': '2015-11-16T09:00:00-08:00'},
+             'end': {'dateTime': '2015-11-20T17:00:00-08:00'}}}
+
+    busy_test = get_busy_dict(events, begin_date, end_date)
+
+    for event in busy_test:
+        assert event in busy
+
+
+def get_busy_dict_6_test():
+    """
+    get_busy_dict_6_test: Sequential all day events during the interval.
+    """
+    begin_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=9, minute=0, second=0, microsecond=0, day=16,
+        month=11, year=2015)
+    end_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=17, minute=0, second=0, microsecond=0, day=20,
+        month=11, year=2015)
+
+    events = [{'start': {'date': '2015-11-16'},
+               'end': {'date': '2015-11-17'}},
+              {'start': {'date': '2015-11-17'},
+               'end': {'date': '2015-11-18'}}]
+
+    busy = {'2015-11-16T09:00:00-08:00':
+            {'start': {'dateTime': '2015-11-16T09:00:00-08:00'},
+             'end': {'dateTime': '2015-11-16T17:00:00-08:00'}},
+            '2015-11-17T09:00:00-08:00':
+            {'start': {'dateTime': '2015-11-17T09:00:00-08:00'},
+             'end': {'dateTime': '2015-11-17T17:00:00-08:00'}}}
+
+    busy_test = get_busy_dict(events, begin_date, end_date)
+
+    for event in busy_test:
+        assert event in busy
+
+
+def get_busy_dict_7_test():
+    """
+    get_busy_dict_7_test: One day events that start before and end during the
+    interval.
+    """
+    begin_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=9, minute=0, second=0, microsecond=0, day=16,
+        month=11, year=2015)
+    end_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=17, minute=0, second=0, microsecond=0, day=20,
+        month=11, year=2015)
+
+    events = [{'start': {'dateTime': '2015-11-16T08:00:00-08:00'},
+               'end': {'dateTime': '2015-11-16T10:00:00-08:00'}}]
+
+    busy = {'2015-11-16T09:00:00-08:00':
+            {'start': {'dateTime': '2015-11-16T09:00:00-08:00'},
+             'end': {'dateTime': '2015-11-16T10:00:00-08:00'}}}
+
+    busy_test = get_busy_dict(events, begin_date, end_date)
+
+    for event in busy_test:
+        assert event in busy
+
+
+def get_busy_dict_8_test():
+    """
+    get_busy_dict_8_test: One day events that start during and end after the
+    interval.
+    """
+    begin_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=9, minute=0, second=0, microsecond=0, day=16,
+        month=11, year=2015)
+    end_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=17, minute=0, second=0, microsecond=0, day=20,
+        month=11, year=2015)
+
+    events = [{'start': {'dateTime': '2015-11-16T10:00:00-08:00'},
+               'end': {'dateTime': '2015-11-16T18:00:00-08:00'}}]
+
+    busy = {'2015-11-16T10:00:00-08:00':
+            {'start': {'dateTime': '2015-11-16T10:00:00-08:00'},
+             'end': {'dateTime': '2015-11-16T17:00:00-08:00'}}}
+
+    busy_test = get_busy_dict(events, begin_date, end_date)
+
+    for event in busy_test:
+        assert event in busy
+
+
+def get_busy_dict_9_test():
+    """
+    get_busy_dict_9_test: One day events that start during and end during the
+    interval.
+    """
+    begin_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=9, minute=0, second=0, microsecond=0, day=16,
+        month=11, year=2015)
+    end_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=17, minute=0, second=0, microsecond=0, day=20,
+        month=11, year=2015)
+
+    events = [{'start': {'dateTime': '2015-11-16T10:00:00-08:00'},
+               'end': {'dateTime': '2015-11-16T11:00:00-08:00'}}]
+
+    busy = {'2015-11-16T10:00:00-08:00':
+            {'start': {'dateTime': '2015-11-16T10:00:00-08:00'},
+             'end': {'dateTime': '2015-11-16T11:00:00-08:00'}}}
+
+    busy_test = get_busy_dict(events, begin_date, end_date)
+
+    for event in busy_test:
+        assert event in busy
+
+
+def get_busy_dict_10_test():
+    """
+    get_busy_dict_10_test: One day events that start before and end after the
+    interval.
+    """
+    begin_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=9, minute=0, second=0, microsecond=0, day=16,
+        month=11, year=2015)
+    end_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=17, minute=0, second=0, microsecond=0, day=20,
+        month=11, year=2015)
+
+    events = [{'start': {'dateTime': '2015-11-16T08:00:00-08:00'},
+               'end': {'dateTime': '2015-11-16T18:00:00-08:00'}}]
+
+    busy = {'2015-11-16T09:00:00-08:00':
+            {'start': {'dateTime': '2015-11-16T09:00:00-08:00'},
+             'end': {'dateTime': '2015-11-16T17:00:00-08:00'}}}
+
+    busy_test = get_busy_dict(events, begin_date, end_date)
+
+    for event in busy_test:
+        assert event in busy
+
+
+def get_busy_dict_11_test():
+    """
+    get_busy_dict_11_test: Sequential one day events during the interval.
+    """
+    begin_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=9, minute=0, second=0, microsecond=0, day=16,
+        month=11, year=2015)
+    end_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=17, minute=0, second=0, microsecond=0, day=20,
+        month=11, year=2015)
+
+    events = [{'start': {'dateTime': '2015-11-16T09:00:00-08:00'},
+               'end': {'dateTime': '2015-11-16T10:00:00-08:00'}},
+              {'start': {'dateTime': '2015-11-16T10:00:00-08:00'},
+               'end': {'dateTime': '2015-11-16T11:00:00-08:00'}}]
+
+    busy = {'2015-11-16T09:00:00-08:00':
+            {'start': {'dateTime': '2015-11-16T09:00:00-08:00'},
+             'end': {'dateTime': '2015-11-16T10:00:00-08:00'}},
+            '2015-11-16T10:00:00-08:00':
+            {'start': {'dateTime': '2015-11-17T10:00:00-08:00'},
+             'end': {'dateTime': '2015-11-17T11:00:00-08:00'}}}
+
+    busy_test = get_busy_dict(events, begin_date, end_date)
+
+    for event in busy_test:
+        assert event in busy
+
+
+def get_busy_list_1_test():
+    """
+    get_busy_list_1_test: Sequential all day busy times.
+    """
+    busy = {'2015-11-16T09:00:00-08:00':
+            {'start': {'dateTime': '2015-11-16T09:00:00-08:00'},
+             'end': {'dateTime': '2015-11-16T17:00:00-08:00'}},
+            '2015-11-17T09:00:00-08:00':
+            {'start': {'dateTime': '2015-11-17T09:00:00-08:00'},
+             'end': {'dateTime': '2015-11-17T17:00:00-08:00'}}}
+
+    busy_list = [{'start': {'dateTime': '2015-11-16T09:00:00-08:00'},
+                  'end': {'dateTime': '2015-11-17T17:00:00-08:00'}}]
 
     assert busy_list == get_busy_list(busy)
 
 
-def get_free_times_test():
-    begin_date = arrow.get(
-        '11/09/2015 09:00', 'MM/DD/YYYY HH:mm').replace(
-        tzinfo=tz.tzlocal()).isoformat()
-    end_date = arrow.get(
-        '11/13/2015 17:00', 'MM/DD/YYYY HH:mm').replace(
-        tzinfo=tz.tzlocal()).isoformat()
+def get_busy_list_2_test():
+    """
+    get_busy_list_2_test: Overlapping all day busy times and busy times
+    within the same day.
+    """
 
-    busy = [{'start': {'dateTime': '2015-11-09T09:00:00-08:00'},
-             'end': {'dateTime': '2015-11-11T11:00:00-08:00'}},
-            {'start': {'dateTime': '2015-11-12T09:00:00-08:00'},
-             'end': {'dateTime': '2015-11-12T13:00:00-08:00'}},
-            {'start': {'dateTime': '2015-11-12T15:00:00-08:00'},
-             'end': {'dateTime': '2015-11-12T16:00:00-08:00'}},
-            {'start': {'dateTime': '2015-11-13T16:00:00-08:00'},
-             'end': {'dateTime': '2015-11-13T17:00:00-08:00'}}]
+    busy = {'2015-11-16T09:00:00-08:00':
+            {'start': {'dateTime': '2015-11-16T09:00:00-08:00'},
+             'end': {'dateTime': '2015-11-16T17:00:00-08:00'}},
+            '2015-11-16T10:00:00-08:00':
+            {'start': {'dateTime': '2015-11-16T10:00:00-08:00'},
+             'end': {'dateTime': '2015-11-16T11:00:00-08:00'}}}
 
-    free = [('2015-11-11T11:00:00-08:00', '2015-11-11T17:00:00-08:00'),
-            ('2015-11-12T13:00:00-08:00', '2015-11-12T15:00:00-08:00'),
-            ('2015-11-12T16:00:00-08:00', '2015-11-13T16:00:00-08:00')]
+    busy_list = [{'start': {'dateTime': '2015-11-16T09:00:00-08:00'},
+                  'end': {'dateTime': '2015-11-16T17:00:00-08:00'}}]
+
+    assert busy_list == get_busy_list(busy)
+
+
+def get_busy_list_3_test():
+    """
+    get_busy_list_3_test: Sequential busy times within the same day.
+    """
+
+    busy = {'2015-11-16T09:00:00-08:00':
+            {'start': {'dateTime': '2015-11-16T09:00:00-08:00'},
+             'end': {'dateTime': '2015-11-16T10:00:00-08:00'}},
+            '2015-11-16T10:00:00-08:00':
+            {'start': {'dateTime': '2015-11-16T10:00:00-08:00'},
+             'end': {'dateTime': '2015-11-16T11:00:00-08:00'}}}
+
+    busy_list = [{'start': {'dateTime': '2015-11-16T09:00:00-08:00'},
+                  'end': {'dateTime': '2015-11-16T11:00:00-08:00'}}]
+
+    assert busy_list == get_busy_list(busy)
+
+
+def get_busy_list_4_test():
+    """
+    get_busy_list_4_test: Sequential all day busy times and busy times within
+    the same day.
+    """
+    busy = {'2015-11-16T09:00:00-08:00':
+            {'start': {'dateTime': '2015-11-16T09:00:00-08:00'},
+             'end': {'dateTime': '2015-11-16T17:00:00-08:00'}},
+            '2015-11-17T09:00:00-08:00':
+            {'start': {'dateTime': '2015-11-17T09:00:00-08:00'},
+             'end': {'dateTime': '2015-11-17T10:00:00-08:00'}}}
+
+    busy_list = [{'start': {'dateTime': '2015-11-16T09:00:00-08:00'},
+                  'end': {'dateTime': '2015-11-17T10:00:00-08:00'}}]
+
+    assert busy_list == get_busy_list(busy)
+
+
+def get_busy_list_5_test():
+    """
+    get_busy_list_5_test: Busy dict is empty.
+    """
+    busy = {}
+
+    busy_list = []
+
+    assert busy_list == get_busy_list(busy)
+
+
+def get_free_times_1_test():
+    """
+    get_free_times_1_test: No busy times.
+    """
+    begin_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=9, minute=0, second=0, microsecond=0, day=16,
+        month=11, year=2015)
+    end_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=17, minute=0, second=0, microsecond=0, day=20,
+        month=11, year=2015)
+
+    busy = []
+
+    free = [('2015-11-16T09:00:00-08:00', '2015-11-20T17:00:00-08:00')]
+
+    assert free == get_free_times(busy, begin_date, end_date)
+
+
+def get_free_times_2_test():
+    """
+    get_free_times_2_test: Only one busy time at beginning of the interval.
+    """
+    begin_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=9, minute=0, second=0, microsecond=0, day=16,
+        month=11, year=2015)
+    end_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=17, minute=0, second=0, microsecond=0, day=20,
+        month=11, year=2015)
+
+    busy = [{'start': {'dateTime': '2015-11-16T09:00:00-08:00'},
+             'end': {'dateTime': '2015-11-16T10:00:00-08:00'}}]
+
+    free = [('2015-11-16T10:00:00-08:00', '2015-11-20T17:00:00-08:00')]
+
+    assert free == get_free_times(busy, begin_date, end_date)
+
+
+def get_free_times_3_test():
+    """
+    get_free_times_3_test: Only one busy time at end of the interval.
+    """
+    begin_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=9, minute=0, second=0, microsecond=0, day=16,
+        month=11, year=2015)
+    end_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=17, minute=0, second=0, microsecond=0, day=20,
+        month=11, year=2015)
+
+    busy = [{'start': {'dateTime': '2015-11-20T16:00:00-08:00'},
+             'end': {'dateTime': '2015-11-20T17:00:00-08:00'}}]
+
+    free = [('2015-11-16T09:00:00-08:00', '2015-11-20T16:00:00-08:00')]
+
+    assert free == get_free_times(busy, begin_date, end_date)
+
+
+def get_free_times_4_test():
+    """
+    get_free_times_4_test: Only one busy time in the middle of the interval.
+    """
+    begin_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=9, minute=0, second=0, microsecond=0, day=16,
+        month=11, year=2015)
+    end_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=17, minute=0, second=0, microsecond=0, day=20,
+        month=11, year=2015)
+
+    busy = [{'start': {'dateTime': '2015-11-16T10:00:00-08:00'},
+             'end': {'dateTime': '2015-11-16T11:00:00-08:00'}}]
+
+    free = [('2015-11-16T09:00:00-08:00', '2015-11-16T10:00:00-08:00'),
+            ('2015-11-16T11:00:00-08:00', '2015-11-20T17:00:00-08:00')]
+
+    assert free == get_free_times(busy, begin_date, end_date)
+
+
+def get_free_times_5_test():
+    """
+    get_free_times_5_test: Two busy times, one at the beginning and one in
+    the middle of the interval.
+    """
+    begin_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=9, minute=0, second=0, microsecond=0, day=16,
+        month=11, year=2015)
+    end_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=17, minute=0, second=0, microsecond=0, day=20,
+        month=11, year=2015)
+
+    busy = [{'start': {'dateTime': '2015-11-16T09:00:00-08:00'},
+             'end': {'dateTime': '2015-11-16T10:00:00-08:00'}},
+            {'start': {'dateTime': '2015-11-20T16:00:00-08:00'},
+             'end': {'dateTime': '2015-11-20T17:00:00-08:00'}}]
+
+    free = [('2015-11-16T10:00:00-08:00', '2015-11-20T16:00:00-08:00')]
+
+    assert free == get_free_times(busy, begin_date, end_date)
+
+
+def get_free_times_6_test():
+    """
+    get_free_times_6_test: Two busy times in the middle of the interval and
+    on the same day.
+    """
+    begin_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=9, minute=0, second=0, microsecond=0, day=16,
+        month=11, year=2015)
+    end_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=17, minute=0, second=0, microsecond=0, day=20,
+        month=11, year=2015)
+
+    busy = [{'start': {'dateTime': '2015-11-16T10:00:00-08:00'},
+             'end': {'dateTime': '2015-11-16T11:00:00-08:00'}},
+            {'start': {'dateTime': '2015-11-16T12:00:00-08:00'},
+             'end': {'dateTime': '2015-11-16T13:00:00-08:00'}}]
+
+    free = [('2015-11-16T09:00:00-08:00', '2015-11-16T10:00:00-08:00'),
+            ('2015-11-16T11:00:00-08:00', '2015-11-16T12:00:00-08:00'),
+            ('2015-11-16T13:00:00-08:00', '2015-11-20T17:00:00-08:00')]
+
+    assert free == get_free_times(busy, begin_date, end_date)
+
+
+def get_free_times_7_test():
+    """
+    get_free_times_7_test: Two busy times, one in the middle of the start day
+    and one on a different day.
+    """
+    begin_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=9, minute=0, second=0, microsecond=0, day=16,
+        month=11, year=2015)
+    end_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=17, minute=0, second=0, microsecond=0, day=20,
+        month=11, year=2015)
+
+    busy = [{'start': {'dateTime': '2015-11-16T10:00:00-08:00'},
+             'end': {'dateTime': '2015-11-16T11:00:00-08:00'}},
+            {'start': {'dateTime': '2015-11-17T12:00:00-08:00'},
+             'end': {'dateTime': '2015-11-17T13:00:00-08:00'}}]
+
+    free = [('2015-11-16T09:00:00-08:00', '2015-11-16T10:00:00-08:00'),
+            ('2015-11-16T11:00:00-08:00', '2015-11-17T12:00:00-08:00'),
+            ('2015-11-17T13:00:00-08:00', '2015-11-20T17:00:00-08:00')]
+
+    assert free == get_free_times(busy, begin_date, end_date)
+
+
+def get_free_times_8_test():
+    """
+    get_free_times_8_test: Two busy times, one in the middle not on the start
+    day and one on a different day.
+    """
+    begin_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=9, minute=0, second=0, microsecond=0, day=16,
+        month=11, year=2015)
+    end_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=17, minute=0, second=0, microsecond=0, day=20,
+        month=11, year=2015)
+
+    busy = [{'start': {'dateTime': '2015-11-17T10:00:00-08:00'},
+             'end': {'dateTime': '2015-11-17T11:00:00-08:00'}},
+            {'start': {'dateTime': '2015-11-18T12:00:00-08:00'},
+             'end': {'dateTime': '2015-11-18T13:00:00-08:00'}}]
+
+    free = [('2015-11-16T09:00:00-08:00', '2015-11-17T10:00:00-08:00'),
+            ('2015-11-17T11:00:00-08:00', '2015-11-18T12:00:00-08:00'),
+            ('2015-11-18T13:00:00-08:00', '2015-11-20T17:00:00-08:00')]
+
+    assert free == get_free_times(busy, begin_date, end_date)
+
+
+def get_free_times_9_test():
+    """
+    get_free_times_9_test: Two busy times, one in the middle on the start
+    day and one at the end.
+    """
+    begin_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=9, minute=0, second=0, microsecond=0, day=16,
+        month=11, year=2015)
+    end_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=17, minute=0, second=0, microsecond=0, day=20,
+        month=11, year=2015)
+
+    busy = [{'start': {'dateTime': '2015-11-16T10:00:00-08:00'},
+             'end': {'dateTime': '2015-11-16T11:00:00-08:00'}},
+            {'start': {'dateTime': '2015-11-20T16:00:00-08:00'},
+             'end': {'dateTime': '2015-11-20T17:00:00-08:00'}}]
+
+    free = [('2015-11-16T09:00:00-08:00', '2015-11-16T10:00:00-08:00'),
+            ('2015-11-16T11:00:00-08:00', '2015-11-20T16:00:00-08:00')]
+
+    assert free == get_free_times(busy, begin_date, end_date)
+
+
+def get_free_times_10_test():
+    """
+    get_free_times_10_test: Complex busy schedule.
+    """
+    begin_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=9, minute=0, second=0, microsecond=0, day=16,
+        month=11, year=2015)
+    end_date = arrow.get().replace(
+        tzinfo=tz.tzlocal(), hour=17, minute=0, second=0, microsecond=0, day=20,
+        month=11, year=2015)
+
+    busy = [{'start': {'dateTime': '2015-11-16T09:00:00-08:00'},
+             'end': {'dateTime': '2015-11-18T11:00:00-08:00'}},
+            {'start': {'dateTime': '2015-11-19T09:00:00-08:00'},
+             'end': {'dateTime': '2015-11-19T13:00:00-08:00'}},
+            {'start': {'dateTime': '2015-11-19T15:00:00-08:00'},
+             'end': {'dateTime': '2015-11-19T16:00:00-08:00'}},
+            {'start': {'dateTime': '2015-11-20T16:00:00-08:00'},
+             'end': {'dateTime': '2015-11-20T17:00:00-08:00'}}]
+
+    free = [('2015-11-18T11:00:00-08:00', '2015-11-18T17:00:00-08:00'),
+            ('2015-11-19T13:00:00-08:00', '2015-11-19T15:00:00-08:00'),
+            ('2015-11-19T16:00:00-08:00', '2015-11-20T16:00:00-08:00')]
 
     assert free == get_free_times(busy, begin_date, end_date)
 
