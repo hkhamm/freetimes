@@ -60,10 +60,10 @@ action.
     {% for event in session.busy_times %}
       <li class="list-group-item">
       {% if event.start.dateTime %}
-        {{ event.summary }}: {{ event.start.dateTime | fmtdatetime }} -
+        {{ event.start.dateTime | fmtdatetime }} -
         {{ event.end.dateTime | fmtdatetime }}
       {% else %}
-        {{ event.summary }}: {{ event.start.date | fmtdate }} -
+        {{ event.start.date | fmtdate }} -
         {{ event.end.date | fmtdate }}
       {% endif %}
       </li>

@@ -20,7 +20,7 @@ from apiclient import discovery
 
 import CONFIG
 
-from busy_times import get_busy_times
+from busy_times import get_busy_times, get_events
 from free_times import get_free_times
 
 # Globals
@@ -330,8 +330,10 @@ def list_times(service):
     """
     app.logger.debug('Entering list_times')
 
-    busy = get_busy_times(service)
-    free = get_free_times(busy)
+    events = get_events(service)
+    busy = get_busy_times(events)
+    free = get_free_times(busy, flask.session["begin_date"],
+                          flask.session['end_date'])
 
     return busy, free
 
@@ -372,6 +374,8 @@ def list_calendars(service):
              "selected": selected,
              "primary": primary
              })
+
+    print(result)
 
     return sorted(result, key=cal_sort_key)
 
