@@ -357,10 +357,6 @@ def list_calendars(service):
         kind = cal["kind"]
         cal_id = cal["id"]
 
-        # if "description" in cal:
-        #     desc = cal["description"]
-        # else:
-        #     desc = "(no description)"
         summary = cal["summary"]
 
         # Optional binary attributes with False as default
@@ -374,8 +370,6 @@ def list_calendars(service):
              "selected": selected,
              "primary": primary
              })
-
-    print(result)
 
     return sorted(result, key=cal_sort_key)
 

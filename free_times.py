@@ -32,19 +32,13 @@ def get_free_times(busy_times, begin_date, end_date):
         event_end = arrow.get(event['end']['dateTime'])
         event_start_time = event_start.format('HH:mm')
         event_end_time = event_end.format('HH:mm')
-        event_start_day = event_start.format('YYYYMMDD')
         event_end_day = event_end.format('YYYYMMDD')
-        day_start = event_start.replace(hour=START_TIME, minute=0).isoformat()
         stored_event_start = arrow.get(stored_event['start']['dateTime'])
         stored_event_start_time = stored_event_start.format('HH:mm')
         stored_event_start_day = arrow.get(
             stored_event['start']['dateTime']).format('YYYYMMDD')
-        stored_event_end_day = arrow.get(
-            stored_event['end']['dateTime']).format('YYYYMMDD')
         stored_event_end = stored_event['end']['dateTime']
         stored_event_end_time = arrow.get(stored_event_end).format('HH:mm')
-        prev_day_end = arrow.get(stored_event_end).replace(hour=END_TIME,
-                                                           minute=0).isoformat()
         event_start = event_start.isoformat()
 
         # starting free time
