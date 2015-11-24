@@ -596,8 +596,7 @@ def get_free_times_10_test():
 
 def get_free_times_11_test():
     """
-    get_free_times_11_test: Two busy times, last one ends at end of a day
-    that is not the end day.
+    Tests two busy times, last one ends at end of a day that is not the end day.
     """
     begin_date = arrow.get().replace(
         tzinfo=tz.tzlocal(), hour=9, minute=0, second=0, microsecond=0, day=16,
@@ -618,18 +617,27 @@ def get_free_times_11_test():
 
 
 def is_available_true_test():
+    """
+    Tests an event that is transparent.
+    """
     event = {'transparency': 'transparent'}
 
     assert is_available(event)
 
 
 def is_available_false_test():
+    """
+    Tests an event that is not transparent.
+    """
     event = {}
 
     assert not is_available(event)
 
 
 def get_start_end_datetime_is_datetime_test():
+    """
+    Tests an event that is not all day.
+    """
     event = {'start': {'dateTime': '2015-11-22T11:36:51.070854-08:00'},
              'end': {'dateTime': '2015-11-22T16:37:58.735355-08:00'}}
 
@@ -645,6 +653,9 @@ def get_start_end_datetime_is_datetime_test():
 
 
 def get_start_end_datetime_is_date_test():
+    """
+    Tests an all day event.
+    """
     event = {'start': {'date': '2015-11-22T11:36:51.070854-08:00'},
              'end': {'date': '2015-11-22T16:37:58.735355-08:00'}}
 
@@ -660,6 +671,9 @@ def get_start_end_datetime_is_date_test():
 
 
 def interpret_time_test():
+    """
+    Tests if a time can be interpreted.
+    """
     time = '9:00'
 
     arrow_time = arrow.get(time, 'H:mm').replace(
@@ -669,6 +683,9 @@ def interpret_time_test():
 
 
 def interpret_date_test():
+    """
+    Tests if a date can be interpreted.
+    """
     date = '12/25/2015'
 
     arrow_date = arrow.get(date, 'MM/DD/YYYY').replace(
@@ -678,6 +695,9 @@ def interpret_date_test():
 
 
 def cal_sort_key_test():
+    """
+    Tests if a calendar is not primary and is selected.
+    """
     cal = {'selected': True,
            'kind': 'calendar#calendarListEntry',
            'primary': False,
