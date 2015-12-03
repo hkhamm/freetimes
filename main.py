@@ -31,7 +31,7 @@ app.logger.setLevel(logging.DEBUG)
 
 SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
 CLIENT_SECRET_FILE = CONFIG.GOOGLE_LICENSE_KEY  # You'll need this
-APPLICATION_NAME = 'auth0-server'
+APPLICATION_NAME = 'MeetMe'
 
 
 # Pages (routed from URLs)
